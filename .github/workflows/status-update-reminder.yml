@@ -9,7 +9,9 @@ on:
       sync-trigger:
         description: 'Trigger sync from dev to stage'
         required: true
-
+  push:
+    branches:
+      - status-update-reminder
 jobs:
   send-notification:
     runs-on: ubuntu-latest
