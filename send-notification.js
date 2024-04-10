@@ -1,4 +1,4 @@
-const { Octokit } = require('@octokit/rest');
+const Octokit = require('@octokit/rest').Octokit;
 const nodemailer = require('nodemailer');
 
 // Create an Octokit instance with authentication
@@ -8,7 +8,7 @@ const octokit = new Octokit({
 
 // Function to fetch issues with specific labels
 async function fetchIssues() {
-  const { data } = await octokit.rest.issues.listForRepo({
+  const { data } = await octokit.issues.listForRepo({
     owner: 'your-organization',
     repo: 'your-repository',
     labels: 'ready to deploy in stage, Deployed to dev'
