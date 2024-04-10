@@ -34,6 +34,8 @@ function extractAssignees(issues) {
 async function sendEmails(assignees) {
   const transporter = nodemailer.createTransport({
     service: 'SMTP',
+    host: 'smtp.gmail.com',
+    port: 587,
     auth: {
       user: process.env.SMTP_USERNAME,
       pass: process.env.SMTP_PASSWORD
@@ -41,7 +43,7 @@ async function sendEmails(assignees) {
   });
 
   const mailOptions = {
-    from: 'your-email@example.com',
+    from: 'asgardeotest3@gmail.com',
     subject: 'Update Required: Deploy to stage',
     text: 'Please update the issue status to "Deploy to stage" to proceed with staging deployment.'
   };
