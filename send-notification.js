@@ -44,20 +44,21 @@ async function sendEmails(assignees) {
 
   const mailOptions = {
     from: 'asgardeotest3@gmail.com',
+    to: 'testasgardeo21@gmail.com', // Recipient's email address
     subject: 'Update Required: Deploy to stage',
     text: 'Please update the issue status to "Deploy to stage" to proceed with staging deployment.'
   };
 
-  assignees.forEach(assignee => {
-    mailOptions.to = `${assignee.name} <${assignee.email}>`;
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-      } else {
-        console.log('Email sent:', info.response);
-      }
-    });
-  });
+  // assignees.forEach(assignee => {
+  //   mailOptions.to = `${assignee.name} <${assignee.email}>`;
+  //   transporter.sendMail(mailOptions, (error, info) => {
+  //     if (error) {
+  //       console.error('Error sending email:', error);
+  //     } else {
+  //       console.log('Email sent:', info.response);
+  //     }
+  //   });
+  // });
 }
 
 // Main function to orchestrate the workflow
