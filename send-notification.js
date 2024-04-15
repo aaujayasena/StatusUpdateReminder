@@ -1,4 +1,4 @@
-const { Octokit } = require('@octokit/rest');
+const { graphql } = require('@octokit/graphql');
 const nodemailer = require('nodemailer');
 
 // Function to send email notifications
@@ -31,58 +31,55 @@ async function sendEmails(assignees) {
   });
 }
 
-// Function to fetch issues from GitHub project board
+// Function to fetch issues from GitHub project board using GraphQL
 async function fetchIssues() {
-  const octokit = new Octokit({
-    auth: process.env.TOKEN
-  });
-
   try {
-    console.log('Fetching issues from GitHub project board...');
-    
-    // Get the project board columns (statuses)
-    const { data: columns } = await octokit.projects.listColumns({
-      project_id: '2' // Replace with the ID of your project board
+    console.log('Fetching issues from GitHub project board using GraphQL...');
+  
+    const response = await graphql({
+      query: `
+        query {
+          repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
+            project(number: 2) {
+              columns(first: 10) {
+                nodes {
+                  cards(first: 100) {
+                    nodes {
+                      content {
+                        ... on Issue {
+                          title
+                          assignees(first: 10) {
+                            nodes {
+                              name
+                              email
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      headers: {
+        authorization: process.env.TOKEN
+      }
     });
 
-    // Find the IDs of the "Ready" and "In progress" columns
-    const readyColumn = columns.find(column => column.name === 'Ready');
-    const inProgressColumn = columns.find(column => column.name === 'In progress');
+    const columns = response.repository.project.columns.nodes;
+    const issues = columns.flatMap(column =>
+      column.cards.nodes.map(card => card.content)
+    );
 
-    // Fetch cards (issues) from the "Ready" and "In progress" columns
-    const readyCards = await fetchCardsForColumn(octokit, readyColumn.id);
-    const inProgressCards = await fetchCardsForColumn(octokit, inProgressColumn.id);
-
-    // Combine the cards from both columns
-    const issues = readyCards.concat(inProgressCards);
-
-    console.log(`Fetched ${issues.length} issues successfully from project board:`);
-    issues.forEach(issue => {
-      console.log(`Issue Title: ${issue.title}`);
-      console.log(`Assignees: ${issue.assignees.map(assignee => assignee.login).join(', ')}`);
-    });
+    console.log(`Fetched ${issues.length} issues successfully from project board.`);
     
     return issues;
   } catch (error) {
     console.error('Error fetching issues from project board:', error.message);
     throw error; // Propagate the error to the caller
-  }
-}
-
-// Function to fetch cards (issues) from a column (status) of project board
-async function fetchCardsForColumn(octokit, columnId) {
-  try {
-    const { data: cards } = await octokit.projects.listCards({
-      column_id: columnId
-    });
-    // Extract issue information from cards
-    return cards.map(card => ({
-      id: card.id,
-      title: card.note,
-      assignees: card.assignees // Extracting assignees from cards
-    }));
-  } catch (error) {
-    throw new Error(`Error fetching cards for column ${columnId}: ${error.message}`);
   }
 }
 
@@ -93,7 +90,7 @@ async function main() {
     const issues = await fetchIssues();
 
     // Extract assignees from fetched issues and send email notifications
-    const assignees = issues.flatMap(issue => issue.assignees);
+    const assignees = issues.flatMap(issue => issue.assignees.nodes);
     sendEmails(assignees);
   } catch (error) {
     console.error('Error:', error.message);
