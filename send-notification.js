@@ -71,14 +71,23 @@ async function fetchIssues() {
     auth: process.env.TOKEN
   });
 
-  // Fetch issues from the "StatusUpdateReminder" repository with "Ready" or "In progress" status
-  const { data } = await octokit.rest.issues.listForRepo({
-    owner: 'aaujayasena', // Replace with your GitHub organization name
-    repo: 'StatusUpdateReminder', // Repository name
-    labels: 'dashboard-status:Ready,dashboard-status:In progress' // Filter by labels
-  });
+  try {
+    console.log('Fetching issues from GitHub...');
+  
+    // Fetch issues from the "StatusUpdateReminder" repository with "Ready" or "In progress" status
+    const { data } = await octokit.rest.issues.listForRepo({
+      owner: 'aaujayasena', // Replace with your GitHub organization name
+      repo: 'StatusUpdateReminder', // Repository name
+      labels: 'dashboard-status:Ready,dashboard-status:In progress' // Filter by labels
+    });
 
-  return data;
+    console.log(`Fetched ${data.length} issues successfully.`);
+    
+    return data;
+  } catch (error) {
+    console.error('Error fetching issues:', error.message);
+    throw error; // Propagate the error to the caller
+  }
 }
 
 // Main function to orchestrate the workflow
