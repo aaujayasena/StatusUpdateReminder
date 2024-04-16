@@ -65,7 +65,7 @@ async function fetchIssues() {
         }
       `,
       headers: {
-         authorization: `token ${process.env.TOKEN}` 
+         authorization: `Bearer ${process.env.TOKEN}` 
       }
     });
 
