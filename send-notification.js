@@ -68,8 +68,8 @@ async function fetchIssues() {
         }
       `,
       headers: {
-         authorization: `token ${token}` 
-      }
+  authorization: `Bearer ${token}`
+  }
     });
 
     const columns = response.repository.project.columns.nodes;
