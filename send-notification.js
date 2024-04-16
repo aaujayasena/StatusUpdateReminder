@@ -2,7 +2,7 @@ const { graphql } = require('@octokit/graphql');
 const nodemailer = require('nodemailer');
 
 // Your personal access token stored in GitHub Secrets
-const token = process.env.TOKEN;
+const token = process.env.GITHUB_TOKEN;
 
 // Maximum number of retries
 const MAX_RETRIES = 3;
