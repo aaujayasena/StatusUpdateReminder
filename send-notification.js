@@ -1,6 +1,9 @@
 const { graphql } = require('@octokit/graphql');
 const nodemailer = require('nodemailer');
 
+// Your personal access token stored in GitHub Secrets
+const token = process.env.TOKEN;
+
 // Function to send email notifications
 async function sendEmails(assignees) {
   const transporter = nodemailer.createTransport({
@@ -65,7 +68,7 @@ async function fetchIssues() {
         }
       `,
       headers: {
-         authorization: `Bearer ${process.env.TOKEN}` 
+         authorization: `token ${token}` 
       }
     });
 
