@@ -27,6 +27,7 @@ async function sendEmails(assignees) {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('Error sending email:', error);
+        process.exit(1); // Fail the process
       } else {
         console.log('Email sent:', info.response);
       }
@@ -68,8 +69,8 @@ async function fetchIssues() {
         }
       `,
       headers: {
-  authorization: `Bearer ${token}`
-  }
+        authorization: `Bearer ${token}`
+      }
     });
 
     const columns = response.repository.project.columns.nodes;
@@ -82,7 +83,7 @@ async function fetchIssues() {
     return issues;
   } catch (error) {
     console.error('Error fetching issues from project board:', error.message);
-    throw error; // Propagate the error to the caller
+    process.exit(1); // Fail the process
   }
 }
 
@@ -97,6 +98,7 @@ async function main() {
     sendEmails(assignees);
   } catch (error) {
     console.error('Error:', error.message);
+    process.exit(1); // Fail the process
   }
 }
 
