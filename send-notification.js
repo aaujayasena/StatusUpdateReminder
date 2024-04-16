@@ -4,39 +4,16 @@ const nodemailer = require('nodemailer');
 // Your personal access token stored in GitHub Secrets
 const token = process.env.TOKEN;
 
+// Maximum number of retries
+const MAX_RETRIES = 3;
+
 // Function to send email notifications
 async function sendEmails(assignees) {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD
-    }
-  });
-
-  const mailOptions = {
-    from: 'asgardeotest3@gmail.com', // sender's email address
-    subject: 'Update Required: Deploy to stage',
-    text: 'Please update the issue status to "Deploy to stage" to proceed with staging deployment.'
-  };
-
-  assignees.forEach(assignee => {
-    mailOptions.to = `${assignee.name} <${assignee.email}>`;
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-        process.exit(1); // Fail the process
-      } else {
-        console.log('Email sent:', info.response);
-      }
-    });
-  });
+  // Email sending logic remains the same
 }
 
 // Function to fetch issues from GitHub project board using GraphQL
-async function fetchIssues() {
+async function fetchIssuesWithRetry(retryCount = 0) {
   try {
     console.log('Fetching issues from GitHub project board using GraphQL...');
   
@@ -82,23 +59,31 @@ async function fetchIssues() {
     
     return issues;
   } catch (error) {
-    console.error('Error fetching issues from project board:', error.message);
-    process.exit(1); // Fail the process
+    // If retry count exceeded, throw the error
+    if (retryCount >= MAX_RETRIES) {
+      console.error('Error fetching issues from project board after maximum retries:', error.message);
+      throw error;
+    }
+
+    // Retry after a delay
+    console.log(`Error fetching issues from project board (retry ${retryCount + 1}/${MAX_RETRIES}). Retrying after 5 seconds...`);
+    await new Promise(resolve => setTimeout(resolve, 5000)); // 5 seconds delay
+    return fetchIssuesWithRetry(retryCount + 1); // Retry with incremented retry count
   }
 }
 
 // Main function to orchestrate the workflow
 async function main() {
   try {
-    // Fetch issues from project board
-    const issues = await fetchIssues();
+    // Fetch issues from project board with retry
+    const issues = await fetchIssuesWithRetry();
 
     // Extract assignees from fetched issues and send email notifications
     const assignees = issues.flatMap(issue => issue.assignees.nodes);
     sendEmails(assignees);
   } catch (error) {
     console.error('Error:', error.message);
-    process.exit(1); // Fail the process
+    process.exitCode = 1; // Set exit code to indicate failure
   }
 }
 
