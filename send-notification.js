@@ -50,7 +50,9 @@ async function fetchIssuesWithRetry(retryCount = 0) {
       }
     });
 
-    const columns = response.repository.project.columns.nodes;
+    console.log('GraphQL Response:', response);
+
+    const columns = response.repository?.project?.columns?.nodes || [];
     const issues = columns.flatMap(column =>
       column.cards.nodes.map(card => card.content)
     );
