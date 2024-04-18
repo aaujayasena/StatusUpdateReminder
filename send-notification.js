@@ -21,14 +21,15 @@ async function fetchIssuesWithRetry(retryCount = 0) {
       query: `
         query {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
-            project(number: 2) {
-              columns(first: 5) {
+            project(number: 2) { // Change project number to 2
+              columns(first: 10) {
                 nodes {
                   cards(first: 100) {
                     nodes {
                       content {
                         ... on Issue {
                           title
+                          state // Add state field to fetch issue status
                           assignees(first: 10) {
                             nodes {
                               name
@@ -55,6 +56,7 @@ async function fetchIssuesWithRetry(retryCount = 0) {
     const columns = response.repository?.project?.columns?.nodes || [];
     const issues = columns.flatMap(column =>
       column.cards.nodes.map(card => card.content)
+        .filter(issue => issue.state === 'IN_PROGRESS' || issue.state === 'READY')
     );
 
     console.log(`Fetched ${issues.length} issues successfully from project board.`);
