@@ -19,21 +19,32 @@ async function fetchIssuesWithRetry(retryCount = 0) {
   
     const response = await graphql({
       query: `
-        query {
+query {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
-  node(id: "2") {
-    ... on ProjectV2 {
-      fields(first: 20) {
-        nodes {
-          ... on ProjectV2FieldCommon {
-            id
-            name
+            projectV2(number: 2) { 
+              columns(first: 5) {
+                nodes {
+                  cards(first: 100) {
+                    nodes {
+                      content {
+                        ... on Issue {
+                          title
+                          state 
+                          assignees(first: 10) {
+                            nodes {
+                              name
+                              email
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
-      }
-    }
-  }
-}
       `,
       headers: {
         authorization: `Bearer ${token}`
