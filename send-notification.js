@@ -21,8 +21,8 @@ async function fetchIssuesWithRetry(retryCount = 0) {
       query: `
         query {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
-            project(number: 2) { 
-              columns(first: 10) {
+            projectV2(number: 2) { 
+              columns(first: 5) {
                 nodes {
                   cards(first: 100) {
                     nodes {
