@@ -21,30 +21,19 @@ async function fetchIssuesWithRetry(retryCount = 0) {
       query: `
         query {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
-            projectV2(number: 2) { 
-              fields(first: 5) {
-                nodes {
-                  cards(first: 100) {
-                    nodes {
-                      content {
-                        ... on Issue {
-                          title
-                          state 
-                          assignees(first: 10) {
-                            nodes {
-                              name
-                              email
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+  node(id: "2") {
+    ... on ProjectV2 {
+      fields(first: 20) {
+        nodes {
+          ... on ProjectV2FieldCommon {
+            id
+            name
           }
         }
+      }
+    }
+  }
+}
       `,
       headers: {
         authorization: `Bearer ${token}`
