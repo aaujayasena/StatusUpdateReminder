@@ -23,7 +23,7 @@ query {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
             projectV2(number: 2) {
             id
-              fileds(first: 5) {
+              fields(first: 5) {
                 nodes {
                   cards(first: 100) {
                     nodes {
