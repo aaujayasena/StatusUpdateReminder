@@ -23,7 +23,7 @@ async function fetchIssuesWithRetry(retryCount = 0) {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
             projectV2(number: 2) {
               fields {
-                edges() {
+                edges {
                   nodes {
                     fieldValueByName(name: "Status") {
                       ... on ProjectV2ItemFieldSingleSelectValue {
