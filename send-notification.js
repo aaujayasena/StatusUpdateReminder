@@ -44,11 +44,11 @@ async function fetchIssuesWithRetry(retryCount = 0) {
 
     console.log('GraphQL Response:', response);
 
-    const columns = response.repository?.project?.columns?.nodes || [];
-    const issues = columns.flatMap(column =>
-      column.cards.nodes.map(card => card.content)
-        .filter(issue => issue.state === 'In Progress' || issue.state === 'Ready')
-    );
+    // const columns = response.repository?.project?.columns?.nodes || [];
+    // const issues = columns.flatMap(column =>
+    //   column.cards.nodes.map(card => card.content)
+    //     .filter(issue => issue.state === 'In Progress' || issue.state === 'Ready')
+    // );
 
     console.log(`Fetched ${issues.length} issues successfully from project board.`);
     
