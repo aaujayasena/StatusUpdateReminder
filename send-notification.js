@@ -24,7 +24,7 @@ async function fetchIssuesWithRetry(retryCount = 0) {
             projectV2(number: 2) {
               fields {
                 edges {
-                  nodes {
+                  node {
                     fieldValueByName(name: "Status") {
                       ... on ProjectV2ItemFieldSingleSelectValue {
                       name
