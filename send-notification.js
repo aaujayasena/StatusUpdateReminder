@@ -22,7 +22,7 @@ async function fetchIssuesWithRetry(retryCount = 0) {
 query {
           repository(owner: "aaujayasena", name: "StatusUpdateReminder") {
         projectV2(number: 2) {
-  nodes {
+  fileds {
     items(first: 10) {
       nodes {
         fieldValueByName(name: "Status") {
