@@ -1,5 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
+#Workflow name
 name: Send Issue Update Notification
 
 # Allows you to run this workflow manually from the Actions tab
@@ -13,20 +12,29 @@ on:
     branches:
       - status-update-reminder
 jobs:
-  send-notification:
+  notify_change_owners:
+    # The workflow runs on the latest version of Ubuntu
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repositories
+        # This action checks out the repository where the workflow is defined
         uses: actions/checkout@v2
+        with:
+        # Use the current repository for the workflow
+          repository: ${{ github.repository }}
 
       - name: Set up Node.js
+        # This action sets up the Node.js environment
         uses: actions/setup-node@v2
         with:
+          # Specify the Node.js version to use
           node-version: '21.5.0'
 
       - name: Install dependencies
+          # node-fetch: To make HTTP requests to the GitHub GraphQL API
+          # nodemailer : To send email via node mailer. Here we can use the @sendgrid/mail as well. 
         run: |
-          npm install @octokit/rest
+          npm install node-fetch
           npm install nodemailer
 
       - name: Run script to fetch issues and send notifications
